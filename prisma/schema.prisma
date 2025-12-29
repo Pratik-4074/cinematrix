@@ -1,0 +1,388 @@
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+//////////////////////
+// USER
+//////////////////////
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+
+  ratings      Rating[]
+  watchlists   Watchlist[]
+  interactions UserInteraction[]
+}
+
+//////////////////////
+// MOVIE
+//////////////////////
+model Movie {
+  id               Int      @id
+  title            String
+  originalTitle    String
+  overview         String?
+  tagline          String?
+  status           String?
+  releaseDate      DateTime?
+  runtime          Int?
+  budget           Int?
+  revenue          Int?
+  adult            Boolean  @default(false)
+  homepage         String?
+  imdbId           String?
+  originalLanguage String
+  popularity       Float?
+  voteAverage      Float?
+  voteCount        Int?
+  posterPath       String?
+  backdropPath     String?
+
+  ratingAverage    Float?
+  ratingCount      Int?
+
+  genres              MovieGenre[]
+  keywords            MovieKeyword[]
+  spokenLanguages     MovieSpokenLanguage[]
+  productionCompanies MovieProductionCompany[]
+  productionCountries MovieProductionCountry[]
+  cast                MovieCast[]
+  crew                MovieCrew[]
+
+  ratings       Rating[]
+  featureVector MovieFeature?
+
+  watchlistEntries WatchlistMovie[]
+  interactions     UserInteraction[]
+}
+
+//////////////////////
+// TV SHOW
+//////////////////////
+model TVShow {
+  id               Int      @id
+  name             String
+  originalName     String
+  overview         String?
+  tagline          String?
+  status           String?
+  type             String?
+  inProduction     Boolean
+  firstAirDate     DateTime?
+  lastAirDate      DateTime?
+  numberOfSeasons  Int?
+  numberOfEpisodes Int?
+  episodeRunTime   Int?
+  adult            Boolean
+  homepage         String?
+  originalLanguage String
+  popularity       Float?
+  voteAverage      Float?
+  voteCount        Int?
+  posterPath       String?
+  backdropPath     String?
+
+  genres              TVShowGenre[]
+  spokenLanguages     TVShowSpokenLanguage[]
+  productionCompanies TVShowProductionCompany[]
+  productionCountries TVShowProductionCountry[]
+  networks            TVShowNetwork[]
+  cast                TVShowCast[]
+}
+
+//////////////////////
+// PERSON
+//////////////////////
+model Person {
+  id                 Int      @id
+  name               String
+  originalName       String
+  knownForDepartment String
+  gender             Int?
+  adult              Boolean
+  popularity         Float?
+  profilePath        String?
+
+  movieCast  MovieCast[]
+  movieCrew  MovieCrew[]
+  tvShowCast TVShowCast[]
+}
+
+//////////////////////
+// GENRES
+//////////////////////
+model Genre {
+  id     Int    @id
+  name   String
+
+  movies  MovieGenre[]
+  tvShows TVShowGenre[]
+}
+
+model MovieGenre {
+  movie   Movie @relation(fields: [movieId], references: [id])
+  movieId Int
+
+  genre   Genre @relation(fields: [genreId], references: [id])
+  genreId Int
+
+  @@id([movieId, genreId])
+}
+
+model TVShowGenre {
+  tvShow   TVShow @relation(fields: [tvShowId], references: [id])
+  tvShowId Int
+
+  genre    Genre @relation(fields: [genreId], references: [id])
+  genreId  Int
+
+  @@id([tvShowId, genreId])
+}
+
+//////////////////////
+// KEYWORDS
+//////////////////////
+model Keyword {
+  id     Int    @id
+  name   String
+
+  movies MovieKeyword[]
+}
+
+model MovieKeyword {
+  movie   Movie @relation(fields: [movieId], references: [id])
+  movieId Int
+
+  keyword Keyword @relation(fields: [keywordId], references: [id])
+  keywordId Int
+
+  @@id([movieId, keywordId])
+}
+
+//////////////////////
+// LANGUAGES
+//////////////////////
+model Language {
+  code  String @id
+  name  String
+
+  movies  MovieSpokenLanguage[]
+  tvShows TVShowSpokenLanguage[]
+}
+
+model MovieSpokenLanguage {
+  movie        Movie    @relation(fields: [movieId], references: [id])
+  movieId      Int
+
+  language     Language @relation(fields: [languageCode], references: [code])
+  languageCode String
+
+  @@id([movieId, languageCode])
+}
+
+model TVShowSpokenLanguage {
+  tvShow       TVShow   @relation(fields: [tvShowId], references: [id])
+  tvShowId     Int
+
+  language     Language @relation(fields: [languageCode], references: [code])
+  languageCode String
+
+  @@id([tvShowId, languageCode])
+}
+
+//////////////////////
+// PRODUCTION
+//////////////////////
+model ProductionCompany {
+  id     Int    @id
+  name   String
+
+  movies  MovieProductionCompany[]
+  tvShows TVShowProductionCompany[]
+}
+
+model MovieProductionCompany {
+  movie     Movie             @relation(fields: [movieId], references: [id])
+  movieId   Int
+
+  company   ProductionCompany @relation(fields: [companyId], references: [id])
+  companyId Int
+
+  @@id([movieId, companyId])
+}
+
+model TVShowProductionCompany {
+  tvShow    TVShow            @relation(fields: [tvShowId], references: [id])
+  tvShowId  Int
+
+  company   ProductionCompany @relation(fields: [companyId], references: [id])
+  companyId Int
+
+  @@id([tvShowId, companyId])
+}
+
+model ProductionCountry {
+  id     Int    @id
+  name   String
+
+  movies  MovieProductionCountry[]
+  tvShows TVShowProductionCountry[]
+}
+
+model MovieProductionCountry {
+  movie      Movie             @relation(fields: [movieId], references: [id])
+  movieId    Int
+
+  country    ProductionCountry @relation(fields: [countryId], references: [id])
+  countryId  Int
+
+  @@id([movieId, countryId])
+}
+
+model TVShowProductionCountry {
+  tvShow     TVShow            @relation(fields: [tvShowId], references: [id])
+  tvShowId   Int
+
+  country    ProductionCountry @relation(fields: [countryId], references: [id])
+  countryId  Int
+
+  @@id([tvShowId, countryId])
+}
+
+//////////////////////
+// NETWORKS
+//////////////////////
+model Network {
+  id      Int         @id
+  name    String
+  tvShows TVShowNetwork[]
+}
+
+model TVShowNetwork {
+  tvShow    TVShow   @relation(fields: [tvShowId], references: [id])
+  tvShowId  Int
+
+  network   Network  @relation(fields: [networkId], references: [id])
+  networkId Int
+
+  @@id([tvShowId, networkId])
+}
+
+//////////////////////
+// CAST & CREW
+//////////////////////
+model MovieCast {
+  movie     Movie  @relation(fields: [movieId], references: [id])
+  movieId   Int
+
+  person    Person @relation(fields: [personId], references: [id])
+  personId  Int
+
+  character String?
+  castOrder Int?
+
+  @@id([movieId, personId])
+}
+
+model MovieCrew {
+  movie     Movie  @relation(fields: [movieId], references: [id])
+  movieId   Int
+
+  person    Person @relation(fields: [personId], references: [id])
+  personId  Int
+
+  job       String
+
+  @@id([movieId, personId, job])
+}
+
+model TVShowCast {
+  tvShow    TVShow @relation(fields: [tvShowId], references: [id])
+  tvShowId  Int
+
+  person    Person @relation(fields: [personId], references: [id])
+  personId  Int
+
+  character String?
+
+  @@id([tvShowId, personId])
+}
+
+//////////////////////
+// RECOMMENDATION
+//////////////////////
+model MovieFeature {
+  movieId      Int     @id
+  movie        Movie   @relation(fields: [movieId], references: [id])
+  featureVector Bytes
+  modelVersion  String
+  createdAt     DateTime @default(now())
+}
+
+//////////////////////
+// USER FEEDBACK
+//////////////////////
+model Rating {
+  id        String  @id @default(uuid())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  movie     Movie   @relation(fields: [movieId], references: [id])
+  movieId   Int
+
+  rating    Int
+  createdAt DateTime @default(now())
+
+  @@unique([userId, movieId])
+}
+
+model Watchlist {
+  id      String @id @default(uuid())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  name    String
+
+  movies  WatchlistMovie[]
+}
+
+model WatchlistMovie {
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
+  watchlistId String
+
+  movie       Movie     @relation(fields: [movieId], references: [id])
+  movieId     Int
+
+  addedAt     DateTime  @default(now())
+
+  @@id([watchlistId, movieId])
+}
+
+//////////////////////
+// USER INTERACTIONS
+//////////////////////
+enum InteractionType {
+  CLICK
+  WATCHLIST
+  SEARCH
+  WATCHED
+}
+
+model UserInteraction {
+  id        String           @id @default(uuid())
+  user      User             @relation(fields: [userId], references: [id])
+  userId    String
+  movie     Movie            @relation(fields: [movieId], references: [id])
+  movieId   Int
+
+  type      InteractionType
+  value     Int?             
+  createdAt DateTime         @default(now())
+}
