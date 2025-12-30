@@ -1,0 +1,388 @@
+// Users
+Table User {
+  id           varchar [pk]
+  name         varchar
+  email        varchar [unique]
+  passwordHash varchar
+  avatarUrl    varchar
+  createdAt    datetime
+}
+
+// Movies
+Table Movie {
+  id               int [pk]
+  title            varchar
+  originalTitle    varchar
+  overview         text
+  tagline          varchar
+  status           varchar
+  releaseDate      datetime
+  runtime          int
+  budget           int
+  revenue          int
+  adult            boolean
+  homepage         varchar
+  imdbId           varchar
+  originalLanguage varchar
+  popularity       float
+  voteAverage      float
+  voteCount        int
+  posterPath       varchar
+  backdropPath     varchar
+}
+
+// TV Shows
+Table TVShow {
+  id               int [pk]
+  name             varchar
+  numberOfSeasons  int
+  numberOfEpisodes int
+  originalLanguage varchar
+  voteCount        int
+  voteAverage      float
+  overview         text
+  adult            boolean
+  backdropPath     varchar
+  firstAirDate     datetime
+  lastAirDate      datetime
+  homepage         varchar
+  inProduction     boolean
+  originalName     varchar
+  popularity       float
+  posterPath       varchar
+  type             varchar
+  status           varchar
+  tagline          varchar
+  episodeRunTime   int
+}
+
+// People
+Table Person {
+  id                 int [pk]
+  name               varchar
+  originalName       varchar
+  knownForDepartment varchar
+  gender             int
+  adult              boolean
+  popularity         float
+  profilePath        varchar
+}
+
+// Creators, Genres, Keywords, Languages, Companies, Countries, Networks
+Table Creator {
+  id   int [pk]
+  name varchar
+}
+
+Table Genre {
+  id   int [pk]
+  name varchar
+}
+
+Table Keyword {
+  id   int [pk]
+  name varchar
+}
+
+Table Language {
+  code varchar [pk]
+  name varchar
+}
+
+Table ProductionCompany {
+  id   int [pk]
+  name varchar
+}
+
+Table ProductionCountry {
+  id   int [pk]
+  name varchar
+}
+
+Table OriginCountry {
+  id   int [pk]
+  name varchar
+}
+
+Table Network {
+  id   int [pk]
+  name varchar
+}
+
+// Join tables with composite primary keys
+Table MovieGenre {
+  movieId int
+  genreId int
+
+  indexes {
+    (movieId, genreId) [pk]
+  }
+}
+
+Table TVShowGenre {
+  tvShowId int
+  genreId  int
+
+  indexes {
+    (tvShowId, genreId) [pk]
+  }
+}
+
+Table MovieKeyword {
+  movieId   int
+  keywordId int
+
+  indexes {
+    (movieId, keywordId) [pk]
+  }
+}
+
+Table MovieSpokenLanguage {
+  movieId      int
+  languageCode varchar
+
+  indexes {
+    (movieId, languageCode) [pk]
+  }
+}
+
+Table TVShowSpokenLanguage {
+  tvShowId     int
+  languageCode varchar
+
+  indexes {
+    (tvShowId, languageCode) [pk]
+  }
+}
+
+Table TVShowLanguage {
+  tvShowId     int
+  languageCode varchar
+
+  indexes {
+    (tvShowId, languageCode) [pk]
+  }
+}
+
+Table MovieProductionCompany {
+  movieId   int
+  companyId int
+
+  indexes {
+    (movieId, companyId) [pk]
+  }
+}
+
+Table TVShowProductionCompany {
+  tvShowId  int
+  companyId int
+
+  indexes {
+    (tvShowId, companyId) [pk]
+  }
+}
+
+Table MovieProductionCountry {
+  movieId   int
+  countryId int
+
+  indexes {
+    (movieId, countryId) [pk]
+  }
+}
+
+Table TVShowProductionCountry {
+  tvShowId  int
+  countryId int
+
+  indexes {
+    (tvShowId, countryId) [pk]
+  }
+}
+
+Table TVShowOriginCountry {
+  tvShowId  int
+  countryId int
+
+  indexes {
+    (tvShowId, countryId) [pk]
+  }
+}
+
+Table TVShowNetwork {
+  tvShowId  int
+  networkId int
+
+  indexes {
+    (tvShowId, networkId) [pk]
+  }
+}
+
+Table MovieCast {
+  movieId   int
+  personId  int
+  castId    int
+  character varchar
+  castOrder int
+
+  indexes {
+    (movieId, personId) [pk]
+  }
+}
+
+Table MovieDirector {
+  movieId  int
+  personId int
+
+  indexes {
+    (movieId, personId) [pk]
+  }
+}
+
+Table TVShowCast {
+  tvShowId  int
+  personId  int
+  character varchar
+  castOrder int
+
+  indexes {
+    (tvShowId, personId) [pk]
+  }
+}
+
+Table TVShowCreator {
+  tvShowId  int
+  creatorId int
+
+  indexes {
+    (tvShowId, creatorId) [pk]
+  }
+}
+
+// Feature tables
+Table MovieFeature {
+  movieId       int [pk]
+  featureVector bytea
+  modelVersion  varchar
+  createdAt     datetime
+}
+
+Table TVShowFeature {
+  tvShowId      int [pk]
+  featureVector bytea
+  modelVersion  varchar
+  createdAt     datetime
+}
+
+// Ratings
+Table Rating {
+  id        varchar [pk]
+  userId    varchar
+  movieId   int
+  tvShowId  int
+  rating    int
+  createdAt datetime
+}
+
+// Watchlists
+Table Watchlist {
+  id        varchar [pk]
+  userId    varchar
+  name      varchar
+  createdAt datetime
+}
+
+Table WatchlistMovie {
+  watchlistId varchar
+  movieId     int
+
+  indexes {
+    (watchlistId, movieId) [pk]
+  }
+}
+
+Table WatchlistTVShow {
+  watchlistId varchar
+  tvShowId    int
+
+  indexes {
+    (watchlistId, tvShowId) [pk]
+  }
+}
+
+// User interactions
+Table UserInteraction {
+  id        varchar [pk]
+  userId    varchar
+  movieId   int
+  tvShowId  int
+  type      varchar
+  value     int
+  createdAt datetime
+}
+
+// Relationships
+Ref: MovieGenre.movieId > Movie.id
+Ref: MovieGenre.genreId > Genre.id
+
+Ref: TVShowGenre.tvShowId > TVShow.id
+Ref: TVShowGenre.genreId > Genre.id
+
+Ref: MovieKeyword.movieId > Movie.id
+Ref: MovieKeyword.keywordId > Keyword.id
+
+Ref: MovieSpokenLanguage.movieId > Movie.id
+Ref: MovieSpokenLanguage.languageCode > Language.code
+
+Ref: TVShowSpokenLanguage.tvShowId > TVShow.id
+Ref: TVShowSpokenLanguage.languageCode > Language.code
+
+Ref: TVShowLanguage.tvShowId > TVShow.id
+Ref: TVShowLanguage.languageCode > Language.code
+
+Ref: MovieProductionCompany.movieId > Movie.id
+Ref: MovieProductionCompany.companyId > ProductionCompany.id
+
+Ref: TVShowProductionCompany.tvShowId > TVShow.id
+Ref: TVShowProductionCompany.companyId > ProductionCompany.id
+
+Ref: MovieProductionCountry.movieId > Movie.id
+Ref: MovieProductionCountry.countryId > ProductionCountry.id
+
+Ref: TVShowProductionCountry.tvShowId > TVShow.id
+Ref: TVShowProductionCountry.countryId > ProductionCountry.id
+
+Ref: TVShowOriginCountry.tvShowId > TVShow.id
+Ref: TVShowOriginCountry.countryId > OriginCountry.id
+
+Ref: TVShowNetwork.tvShowId > TVShow.id
+Ref: TVShowNetwork.networkId > Network.id
+
+Ref: MovieCast.movieId > Movie.id
+Ref: MovieCast.personId > Person.id
+
+Ref: MovieDirector.movieId > Movie.id
+Ref: MovieDirector.personId > Person.id
+
+Ref: TVShowCast.tvShowId > TVShow.id
+Ref: TVShowCast.personId > Person.id
+
+Ref: TVShowCreator.tvShowId > TVShow.id
+Ref: TVShowCreator.creatorId > Creator.id
+
+Ref: MovieFeature.movieId > Movie.id
+Ref: TVShowFeature.tvShowId > TVShow.id
+
+Ref: Rating.userId > User.id
+Ref: Rating.movieId > Movie.id
+Ref: Rating.tvShowId > TVShow.id
+
+Ref: Watchlist.userId > User.id
+Ref: WatchlistMovie.watchlistId > Watchlist.id
+Ref: WatchlistMovie.movieId > Movie.id
+Ref: WatchlistTVShow.watchlistId > Watchlist.id
+Ref: WatchlistTVShow.tvShowId > TVShow.id
+
+Ref: UserInteraction.userId > User.id
+Ref: UserInteraction.movieId > Movie.id
+Ref: UserInteraction.tvShowId > TVShow.id
