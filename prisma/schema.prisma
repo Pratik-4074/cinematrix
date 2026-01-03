@@ -33,29 +33,29 @@ model User {
 // MOVIE
 //////////////////////
 model Movie {
-  id               Int       @id
-  title            String
-  originalTitle    String
-  overview         String?
-  tagline          String?
-  status           String?
-  releaseDate      DateTime?
-  runtime          Int?
-  budget           Int?
-  revenue          Int?
-  adult            Boolean   @default(false)
-  homepage         String?
-  imdbId           String?
-  originalLanguage String
-  popularity       Float?
-  voteAverage      Float?
-  voteCount        Int?
-  posterPath       String?
-  backdropPath     String?
+  id            Int       @id
+  title         String
+  originalTitle String
+  overview      String?
+  tagline       String?
+  status        String?
+  releaseDate   DateTime?
+  runtime       Int?
+  budget        Int?
+  revenue       Int?
+  adult         Boolean   @default(false)
+  homepage      String?
+  imdbId        String?
+  popularity    Float?
+  voteAverage   Float?
+  voteCount     Int?
+  posterPath    String?
+  backdropPath  String?
 
   genres              MovieGenre[]
   keywords            MovieKeyword[]
   spokenLanguages     MovieSpokenLanguage[]
+  originalLanguages   MovieOriginalLanguage[]
   productionCompanies MovieProductionCompany[]
   productionCountries MovieProductionCountry[]
   cast                MovieCast[]
@@ -75,7 +75,6 @@ model TVShow {
   name             String
   numberOfSeasons  Int?
   numberOfEpisodes Int?
-  originalLanguage String
   voteCount        Int?
   voteAverage      Float?
   overview         String?
@@ -99,6 +98,7 @@ model TVShow {
   languages           TVShowLanguage[]
   networks            TVShowNetwork[]
   spokenLanguages     TVShowSpokenLanguage[]
+  originalLanguages   TVShowOriginalLanguage[]
   productionCompanies TVShowProductionCompany[]
   productionCountries TVShowProductionCountry[]
   cast                TVShowCast[]
@@ -169,7 +169,7 @@ model TVShowGenre {
 // KEYWORDS
 //////////////////////
 model Keyword {
-  id   Int    @id
+  id   Int    @id @default(autoincrement())
   name String
 
   movies MovieKeyword[]
@@ -192,12 +192,30 @@ model Language {
   code String @id
   name String
 
-  movies          MovieSpokenLanguage[]
-  tvShows         TVShowSpokenLanguage[]
-  tvShowsLanguage TVShowLanguage[]
+  tvShowsLanguage         TVShowLanguage[]
+  movieOriginalLanguages  MovieOriginalLanguage[]
+  tvshowOriginalLanguages TVShowOriginalLanguage[]
+}
+
+model spokenLanguage {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  movies  MovieSpokenLanguage[]
+  tvShows TVShowSpokenLanguage[]
 }
 
 model MovieSpokenLanguage {
+  movie   Movie @relation(fields: [movieId], references: [id])
+  movieId Int
+
+  language   spokenLanguage @relation(fields: [languageId], references: [id])
+  languageId Int
+
+  @@id([movieId, languageId])
+}
+
+model MovieOriginalLanguage {
   movie   Movie @relation(fields: [movieId], references: [id])
   movieId Int
 
@@ -208,6 +226,16 @@ model MovieSpokenLanguage {
 }
 
 model TVShowSpokenLanguage {
+  tvShow   TVShow @relation(fields: [tvShowId], references: [id])
+  tvShowId Int
+
+  language   spokenLanguage @relation(fields: [languageId], references: [id])
+  languageId Int
+
+  @@id([tvShowId, languageId])
+}
+
+model TVShowOriginalLanguage {
   tvShow   TVShow @relation(fields: [tvShowId], references: [id])
   tvShowId Int
 
