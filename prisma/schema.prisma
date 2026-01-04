@@ -35,14 +35,14 @@ model User {
 model Movie {
   id            Int       @id
   title         String
-  originalTitle String
+  originalTitle String?
   overview      String?
   tagline       String?
   status        String?
   releaseDate   DateTime?
   runtime       Int?
   budget        Int?
-  revenue       Int?
+  revenue       BigInt?
   adult         Boolean   @default(false)
   homepage      String?
   imdbId        String?
@@ -84,7 +84,7 @@ model TVShow {
   lastAirDate      DateTime?
   homepage         String?
   inProduction     Boolean
-  originalName     String
+  originalName     String?
   popularity       Float?
   posterPath       String?
   type             String?
