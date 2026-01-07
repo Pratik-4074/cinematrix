@@ -1,7 +1,9 @@
+import Aboutpage from "./About/Aboutpage";
 import Navbar from "./components/navbar";
 import CineMatrixNavbar from "./components/navbar";
-import Homepage from "./Home/Homepage";
+import Homepage from "./home/page";
 import LoginupPage from "./Login/Loginpage";
+import Moviepage from "./Moviepage/moviepage";
 import SignupPage from "./Signup/Signuppage";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -11,6 +13,6 @@ export default async function Home() {
     const { aboutText } = await res.json();
 
     return (
-        <SignupPage />
+        <Homepage />
     );
 }
