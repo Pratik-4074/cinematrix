@@ -1,8 +1,19 @@
 import { prisma } from './lib/prisma';
 
 async function main() {
-    const allUsers = await prisma.user.findMany();
-    console.log('All users:', JSON.stringify(allUsers, null, 2));
+    const movieVectors = await prisma.movieFeatureVector.findMany({
+        select: {
+            movieId: true,
+            combinedVector: true,
+        },
+    });
+
+    movieVectors.forEach((r) => {
+        console.log({
+            movieId: r.movieId,
+            combinedVectorBytes: r.combinedVector?.length,
+        });
+    });
 }
 
 main()
