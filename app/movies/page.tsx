@@ -6,12 +6,20 @@ import Footercomponent from '../components/Footer';
 import { Star } from 'lucide-react';
 import moviesData from '../data/movies';
 import type { Movie } from '../types';
+import { useSearchParams } from 'next/navigation';
 
 const genres = ['All Movies', 'Drama', 'Romance', 'Sci-Fi', 'Horror', 'Comedy', 'Action'];
 
 export default function Moviepage() {
     const [activeGenre, setActiveGenre] = useState('All Movies');
     const [showAll, setShowAll] = useState(false);
+
+    // Set active genre based on the query parameter
+    const searchParams = useSearchParams();
+    const category = searchParams.get('category');
+    if (category && genres.includes(category) && category !== activeGenre) {
+        setActiveGenre(category);
+    }
 
     // Correctly filter movies based on genre
     const filteredMovies: Movie[] =
