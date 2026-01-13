@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, ChangeEvent } from 'react';
+import Link from 'next/link';
 import { Eye, EyeOff, Film } from 'lucide-react';
 
 interface SignupForm {
@@ -10,7 +11,7 @@ interface SignupForm {
 }
 
 export default function SignupPage() {
-    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState<SignupForm>({
         fullname: '',
         email: '',
@@ -22,23 +23,34 @@ export default function SignupPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = () => {
+    ////////////////////////////////
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         console.log('Form submitted:', formData);
+        const { fullname, email, password } = formData;
+        //////////////////////////////////
     };
 
     return (
         <div className="flex min-h-screen items-center justify-center p-4">
             <div className="flex min-h-[600px] w-full max-w-6xl overflow-hidden rounded-lg bg-white shadow-2xl">
                 {/* LEFT – FORM */}
-                <div className="flex w-1/2 items-center p-12">
-                    <div className="mx-auto w-full max-w-md">
-                        <h1 className="mb-2 font-serif text-4xl font-light text-gray-800">Create an Account</h1>
-                        <p className="mb-8 text-sm text-gray-600">Signup to join our community</p>
+                <div className="flex w-full items-center p-12 md:w-1/2">
+                    <form onSubmit={handleSubmit} className="mx-auto w-full max-w-md">
+                        <h1 className="mb-2 text-center font-serif text-4xl font-light text-gray-800">
+                            Create an Account
+                        </h1>
+                        <p className="mb-8 text-center text-sm text-gray-600">Signup to join our community</p>
 
-                        {/* SOCIAL BUTTONS */}
-                        <div className="mb-6 flex items-center justify-center">
-                            {/* Google */}
-                            <button className="flex w-40 items-center justify-center gap-2 rounded-full border-2 border-gray-300 py-3 text-sm text-gray-600 transition hover:border-gray-400">
+                        {/* SOCIAL BUTTON */}
+                        <div className="mb-6 flex justify-center">
+                            <button
+                                type="button"
+                                className="flex w-40 items-center justify-center gap-2 rounded-full border-2 border-gray-300 py-3 text-sm text-gray-600 transition hover:border-gray-400"
+                            >
                                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                                     <path
                                         fill="#4285F4"
@@ -74,19 +86,21 @@ export default function SignupPage() {
                             <input
                                 type="text"
                                 name="fullname"
+                                required
                                 value={formData.fullname}
                                 onChange={handleChange}
-                                placeholder="Enter your Fullname"
+                                placeholder="Enter your fullname"
                                 className="w-full rounded-full border-2 border-gray-300 px-4 py-3 text-sm text-gray-700 focus:border-gray-400 focus:outline-none"
                             />
                         </div>
 
                         {/* EMAIL */}
                         <div className="mb-5">
-                            <label className="mb-2 block font-serif text-sm text-black">Email id</label>
+                            <label className="mb-2 block font-serif text-sm text-black">Email</label>
                             <input
                                 type="email"
                                 name="email"
+                                required
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="Enter your email id"
@@ -101,6 +115,8 @@ export default function SignupPage() {
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     name="password"
+                                    required
+                                    minLength={8}
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="Enter your password"
@@ -118,7 +134,7 @@ export default function SignupPage() {
 
                         {/* SUBMIT */}
                         <button
-                            onClick={handleSubmit}
+                            type="submit"
                             className="mb-4 w-full rounded-full bg-red-800 py-3 font-medium text-white transition hover:bg-red-900"
                         >
                             Sign up
@@ -126,18 +142,20 @@ export default function SignupPage() {
 
                         <p className="text-center text-sm text-gray-500">
                             Already have an account?{' '}
-                            <span className="cursor-pointer text-red-800 hover:underline">Log in</span>
+                            <Link href="/login">
+                                <span className="cursor-pointer text-red-800 hover:underline">Log in</span>
+                            </Link>
                         </p>
-                    </div>
+                    </form>
                 </div>
 
                 {/* RIGHT – HERO */}
-                <div className="relative w-1/2 overflow-hidden bg-black text-white">
+                <div className="relative hidden w-1/2 overflow-hidden bg-black text-white md:flex">
                     <div className="absolute top-8 right-8 flex items-center gap-2">
                         <Film className="h-5 w-5 text-red-600" />
-                        <span className="text-2xl font-bold text-white">Cinematrix</span>
+                        <span className="text-2xl font-bold">Cinematrix</span>
                     </div>
-                    {/* HERO TEXT */}
+
                     <div className="absolute top-1/2 right-12 -translate-y-1/2 text-right">
                         <h2 className="text-6xl font-bold">Create Your</h2>
                         <h2 className="text-6xl font-bold text-red-600">Cinematic</h2>
@@ -154,7 +172,6 @@ export default function SignupPage() {
                         </div>
                     </div>
 
-                    {/* FOOTER */}
                     <p className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xs text-gray-400">
                         © 2025 Cinematrix. All rights reserved.
                     </p>

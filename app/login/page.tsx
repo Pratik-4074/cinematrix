@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, ChangeEvent } from 'react';
+import Link from 'next/link';
 import { Eye, EyeOff, Film } from 'lucide-react';
 import type { SignupForm } from '../types';
 
 export default function LoginupPage() {
-    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState<SignupForm>({
         email: '',
         password: '',
@@ -16,7 +17,8 @@ export default function LoginupPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         console.log('Form submitted:', formData);
     };
 
@@ -24,11 +26,11 @@ export default function LoginupPage() {
         <div className="flex min-h-screen items-center justify-center p-4">
             <div className="flex min-h-[600px] w-full max-w-6xl overflow-hidden rounded-lg bg-white shadow-2xl">
                 {/* LEFT – HERO */}
-                <div className="relative w-1/2 overflow-hidden bg-black text-white">
+                <div className="relative hidden w-1/2 overflow-hidden bg-black text-white md:flex">
                     {/* LOGO */}
                     <div className="absolute top-8 left-8 flex items-center gap-2">
                         <Film className="h-5 w-5 text-red-600" />
-                        <span className="text-2xl font-bold text-white">Cinematrix</span>
+                        <span className="text-2xl font-bold">Cinematrix</span>
                     </div>
 
                     {/* HERO TEXT */}
@@ -55,15 +57,17 @@ export default function LoginupPage() {
                 </div>
 
                 {/* RIGHT – FORM */}
-                <div className="flex w-1/2 items-center p-12">
-                    <div className="mx-auto w-full max-w-md">
-                        <h1 className="mb-2 font-serif text-4xl font-light text-gray-800">Welcome back !</h1>
-                        <p className="mb-8 text-sm text-gray-600">Login to your account</p>
+                <div className="flex w-full items-center p-12 md:w-1/2">
+                    <form onSubmit={handleSubmit} className="mx-auto w-full max-w-md">
+                        <h1 className="mb-2 text-center font-serif text-4xl font-light text-gray-800">Welcome back!</h1>
+                        <p className="mb-8 text-center text-sm text-gray-600">Login to your account</p>
 
-                        {/* SOCIAL BUTTONS */}
-                        <div className="mb-6 flex items-center justify-center">
-                            {/* Google */}
-                            <button className="flex w-40 items-center justify-center gap-2 rounded-full border-2 border-gray-300 py-3 text-sm text-gray-600 transition hover:border-gray-400">
+                        {/* SOCIAL LOGIN */}
+                        <div className="mb-6 flex justify-center">
+                            <button
+                                type="button"
+                                className="flex w-40 items-center justify-center gap-2 rounded-full border-2 border-gray-300 py-3 text-sm text-gray-600 transition hover:border-gray-400"
+                            >
                                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                                     <path
                                         fill="#4285F4"
@@ -95,10 +99,11 @@ export default function LoginupPage() {
 
                         {/* EMAIL */}
                         <div className="mb-5">
-                            <label className="mb-2 block font-serif text-sm text-gray-700">Email id</label>
+                            <label className="mb-2 block font-serif text-sm text-gray-700">Email</label>
                             <input
                                 type="email"
                                 name="email"
+                                required
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="Enter your email id"
@@ -113,6 +118,7 @@ export default function LoginupPage() {
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     name="password"
+                                    required
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="Enter your password"
@@ -129,19 +135,20 @@ export default function LoginupPage() {
                         </div>
 
                         {/* SUBMIT */}
-                        <div className="flex items-center justify-center">
-                            <button
-                                onClick={handleSubmit}
-                                className="mb-4 w-40 rounded-2xl bg-red-800 py-3 font-medium text-white transition hover:bg-red-900"
-                            >
-                                Login
-                            </button>
-                        </div>
+                        <button
+                            type="submit"
+                            className="mb-4 w-full rounded-2xl bg-red-800 py-3 font-medium text-white transition hover:bg-red-900"
+                        >
+                            Login
+                        </button>
 
                         <p className="text-center text-sm text-gray-500">
-                            No account? <span className="cursor-pointer text-red-800 hover:underline">Create one</span>
+                            No account?{' '}
+                            <Link href="/signup">
+                                <span className="cursor-pointer text-red-800 hover:underline">Create one</span>
+                            </Link>
                         </p>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

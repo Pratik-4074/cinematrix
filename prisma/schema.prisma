@@ -16,6 +16,7 @@ datasource db {
 //////////////////////
 // USER
 //////////////////////
+
 model User {
   id           String   @id @default(uuid())
   name         String
@@ -27,11 +28,21 @@ model User {
   ratings      Rating[]
   watchlists   Watchlist[]
   interactions UserInteraction[]
+
+  // Fields for better-auth
+  emailVerified Boolean   @default(false)
+  image         String?
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
 }
 
 //////////////////////
 // MOVIE
 //////////////////////
+
 model Movie {
   id            Int       @id
   title         String
@@ -70,6 +81,7 @@ model Movie {
 //////////////////////
 // TV SHOW
 //////////////////////
+
 model TVShow {
   id               Int       @id
   name             String
@@ -112,6 +124,7 @@ model TVShow {
 //////////////////////
 // PERSON
 //////////////////////
+
 model Person {
   id                 Int      @id
   name               String
@@ -137,6 +150,7 @@ model Creator {
 //////////////////////
 // GENRES
 //////////////////////
+
 model Genre {
   id   Int    @id @default(autoincrement())
   name String
@@ -168,6 +182,7 @@ model TVShowGenre {
 //////////////////////
 // KEYWORDS
 //////////////////////
+
 model Keyword {
   id   Int    @id @default(autoincrement())
   name String
@@ -188,6 +203,7 @@ model MovieKeyword {
 //////////////////////
 // LANGUAGES
 //////////////////////
+
 model Language {
   code String @id
   name String
@@ -258,6 +274,7 @@ model TVShowLanguage {
 //////////////////////
 // PRODUCTION
 //////////////////////
+
 model ProductionCompany {
   id   Int    @id @default(autoincrement())
   name String
@@ -334,6 +351,7 @@ model TVShowOriginCountry {
 //////////////////////
 // NETWORKS
 //////////////////////
+
 model Network {
   id   Int    @id @default(autoincrement())
   name String
@@ -354,6 +372,7 @@ model TVShowNetwork {
 //////////////////////
 // CAST & DIRECTOR
 //////////////////////
+
 model MovieCast {
   movie   Movie @relation(fields: [movieId], references: [id])
   movieId Int
@@ -404,6 +423,7 @@ model TVShowCreator {
 //////////////////////
 // RECOMMENDATION
 //////////////////////
+
 model MovieFeatureVector {
   movieId Int   @id
   movie   Movie @relation(fields: [movieId], references: [id])
@@ -435,6 +455,7 @@ model TVShowFeature {
 //////////////////////
 // RATING
 //////////////////////
+
 model Rating {
   id     String @id @default(uuid())
   user   User   @relation(fields: [userId], references: [id])
@@ -453,6 +474,7 @@ model Rating {
 //////////////////////
 // WATCHLIST
 //////////////////////
+
 model Watchlist {
   id        String   @id @default(uuid())
   user      User     @relation(fields: [userId], references: [id])
@@ -487,6 +509,7 @@ model WatchlistTVShow {
 //////////////////////
 // USER INTERACTIONS
 //////////////////////
+
 enum InteractionType {
   CLICK
   WATCHLIST
@@ -508,4 +531,54 @@ model UserInteraction {
   type      InteractionType
   value     Int?
   createdAt DateTime        @default(now())
+}
+
+// Models for better-auth
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
