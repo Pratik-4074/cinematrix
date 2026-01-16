@@ -9,7 +9,7 @@ import MovieCard from '../components/MovieCard';
 import CategoryCard from '../components/CategoryCard';
 import { toast } from 'sonner';
 
-import moviesData from '../data/movies';
+import moviesData from '../data/movie';
 
 export default function Homepage() {
     const [showAll, setShowAll] = useState(false);

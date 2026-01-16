@@ -1,19 +1,32 @@
 import { prisma } from './lib/prisma';
+import { writeFileSync } from 'fs';
 
 async function main() {
-    const movieVectors = await prisma.movieFeatureVector.findMany({
-        select: {
-            movieId: true,
-            combinedVector: true,
+    const topMovies = await prisma.movie.findMany({
+        orderBy: { voteCount: 'desc' },
+        take: 50,
+        include: {
+            genres: { include: { genre: true } },
+            keywords: { include: { keyword: true } },
+            spokenLanguages: { include: { language: true } },
+            originalLanguages: { include: { language: true } },
+            productionCompanies: { include: { company: true } },
+            productionCountries: { include: { country: true } },
+            cast: { include: { person: true } },
+            director: { include: { person: true } },
         },
     });
 
-    movieVectors.forEach((r) => {
-        console.log({
-            movieId: r.movieId,
-            combinedVectorBytes: r.combinedVector?.length,
-        });
-    });
+    // Convert BigInt to string for JSON
+    const jsonData = JSON.stringify(
+        topMovies,
+        (_key, value) => (typeof value === 'bigint' ? value.toString() : value),
+        2,
+    );
+
+    writeFileSync('topMovies.json', jsonData, { encoding: 'utf-8' });
+
+    console.log('✅ Top 50 movies saved with all attributes in topMovies.json');
 }
 
 main()

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Star } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import moviesData from '../data/movies';
+import moviesData from '../data/movie';
 import type { Movie } from '../types';
 
 const genres = ['All Movies', 'Drama', 'Romance', 'Sci-Fi', 'Horror', 'Comedy', 'Action'];

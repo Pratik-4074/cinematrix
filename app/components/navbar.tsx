@@ -43,7 +43,7 @@ export default function Navbar() {
                     <span className="bg-primary rounded p-1.5">
                         <Film className="h-5 w-5 text-white" />
                     </span>
-                    <span className="hidden font-medium tracking-wide text-white md:flex">CineMatrix</span>
+                    <span className="hidden font-semibold tracking-wide text-white md:flex">CineMatrix</span>
                 </Link>
 
                 <div className="relative w-full max-w-md">
@@ -51,11 +51,11 @@ export default function Navbar() {
                     <input
                         type="text"
                         placeholder="Search movies, TV shows..."
-                        className="w-full rounded-2xl bg-neutral-200 py-1 pr-4 pl-11 text-sm text-neutral-800 placeholder:text-neutral-400 focus:outline-none"
+                        className="w-full rounded-3xl bg-neutral-200 py-2 pr-4 pl-11 text-sm text-neutral-800 placeholder:text-neutral-400 focus:outline-none"
                     />
                 </div>
 
-                <div className="flex gap-10">
+                <div className="flex gap-10 font-medium">
                     <Link
                         href="/watchlist"
                         className="flex items-center gap-1 whitespace-nowrap text-white transition hover:text-neutral-400"
@@ -71,10 +71,10 @@ export default function Navbar() {
                             {!user ? (
                                 <User className="h-5 w-5" />
                             ) : user.image ? (
-                                <img className="h-6 w-6 rounded-full" src={user.image} alt="User Avatar" />
+                                <img className="h-7 w-7 rounded-full" src={user.image} alt="User Avatar" />
                             ) : (
                                 <img
-                                    className="h-6 w-6 rounded-full"
+                                    className="h-7 w-7 rounded-full"
                                     src="https://st3.depositphotos.com/9998432/13335/v/450/depositphotos_133351928-stock-illustration-default-placeholder-man-and-woman.jpg"
                                     alt="Default Avatar"
                                 />
@@ -84,7 +84,7 @@ export default function Navbar() {
                         </button>
 
                         {open && (
-                            <div className="absolute right-0 mt-5 w-36 rounded-sm bg-neutral-900 py-0.5 shadow-lg ring-1 ring-neutral-800">
+                            <div className="absolute right-0 mt-5 w-36 rounded-sm bg-neutral-900 py-1 shadow-lg ring-1 ring-neutral-800">
                                 {session && (
                                     <Link
                                         href="/user-profile"
