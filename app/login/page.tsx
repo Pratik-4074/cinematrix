@@ -24,7 +24,12 @@ export default function LoginupPage() {
         const { email, password } = formData;
 
         const { data, error } = await authClient.signIn.email(
-            { email, password, callbackURL: '/home', rememberMe: true },
+            {
+                email,
+                password,
+                callbackURL: '/home',
+                rememberMe: true,
+            },
             {
                 onRequest: () => {
                     setLoading(true);
@@ -40,6 +45,15 @@ export default function LoginupPage() {
                 },
             },
         );
+    };
+
+    const handleGoogleSignIn = async () => {
+        const data = await authClient.signIn.social({
+            provider: 'google',
+            callbackURL: '/home',
+            errorCallbackURL: '/error',
+            newUserCallbackURL: '/home',
+        });
     };
 
     return (
@@ -77,6 +91,9 @@ export default function LoginupPage() {
 
                         <div className="mb-6 flex justify-center">
                             <button
+                                onClick={() => {
+                                    handleGoogleSignIn();
+                                }}
                                 type="button"
                                 className="flex w-40 items-center justify-center gap-2 rounded-full border-2 border-gray-300 py-3 text-sm text-gray-600 transition hover:border-gray-400"
                             >
@@ -109,7 +126,7 @@ export default function LoginupPage() {
                         </div>
 
                         <div className="mb-5">
-                            <label className="mb-2 block font-serif text-sm text-gray-700">Email</label>
+                            <label className="mb-2 block text-sm text-gray-700">Email</label>
                             <input
                                 type="email"
                                 name="email"
@@ -122,7 +139,7 @@ export default function LoginupPage() {
                         </div>
 
                         <div className="mb-8">
-                            <label className="mb-2 block font-serif text-sm text-gray-700">Password</label>
+                            <label className="mb-2 block text-sm text-gray-700">Password</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? 'text' : 'password'}
@@ -153,7 +170,7 @@ export default function LoginupPage() {
                         )}
 
                         {loading && (
-                            <button className="bg-opacity-50 mb-4 w-full rounded-2xl bg-red-800 py-3 font-medium text-white">
+                            <button className="mb-4 w-full rounded-2xl bg-red-800 py-3 font-medium text-white opacity-75">
                                 Logging in...
                             </button>
                         )}

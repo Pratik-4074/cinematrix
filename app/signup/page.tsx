@@ -29,7 +29,12 @@ export default function SignupPage() {
         const { fullname, email, password } = formData;
 
         const { data, error } = await authClient.signUp.email(
-            { email, password, name: fullname, callbackURL: '/home' },
+            {
+                email,
+                password,
+                name: fullname,
+                callbackURL: '/home',
+            },
             {
                 onRequest: () => {
                     setLoading(true);
@@ -91,7 +96,7 @@ export default function SignupPage() {
                         </div>
 
                         <div className="mb-5">
-                            <label className="mb-2 block font-serif text-sm text-black">Fullname</label>
+                            <label className="mb-2 block text-sm text-black">Fullname</label>
                             <input
                                 type="text"
                                 name="fullname"
@@ -104,7 +109,7 @@ export default function SignupPage() {
                         </div>
 
                         <div className="mb-5">
-                            <label className="mb-2 block font-serif text-sm text-black">Email</label>
+                            <label className="mb-2 block text-sm text-black">Email</label>
                             <input
                                 type="email"
                                 name="email"
@@ -117,7 +122,7 @@ export default function SignupPage() {
                         </div>
 
                         <div className="mb-8">
-                            <label className="mb-2 block font-serif text-sm text-black">Password</label>
+                            <label className="mb-2 block text-sm text-black">Password</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? 'text' : 'password'}
@@ -142,13 +147,13 @@ export default function SignupPage() {
                         {!loading && (
                             <button
                                 type="submit"
-                                className="mb-4 w-full cursor-pointer rounded-full bg-red-800 py-3 font-medium text-white transition hover:bg-red-900"
+                                className="mb-4 w-full cursor-pointer rounded-2xl bg-red-800 py-3 font-medium text-white transition hover:bg-red-900"
                             >
                                 Sign up
                             </button>
                         )}
                         {loading && (
-                            <button className="bg-opacity-50 mb-4 w-full rounded-full bg-red-800 py-3 font-medium text-white transition hover:bg-red-900">
+                            <button className="mb-4 w-full rounded-2xl bg-red-800 py-3 font-medium text-white opacity-75">
                                 Signing up...
                             </button>
                         )}
