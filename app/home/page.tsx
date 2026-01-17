@@ -7,9 +7,14 @@ import { Play } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import MovieCard from '../components/MovieCard';
 import CategoryCard from '../components/CategoryCard';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
+import type { Movie } from '../types';
+
 import moviesData from '../data/movie';
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function Homepage() {
     const [showAll, setShowAll] = useState(false);
@@ -26,6 +31,26 @@ export default function Homepage() {
         return () => clearTimeout(timer);
     }, []);
 
+    const { session, loading, error, refetch } = useAuth();
+    const user = session?.user || null;
+
+    const [movies, setMovies] = useState<Movie[] | null>(null);
+
+    useEffect(() => {
+        async function getMovies() {
+            if (!session) {
+                try {
+                    const res = await fetch(`${BASE_URL}/api/movies?sort=popular&limit=50`);
+                    const { movies } = await res.json();
+                    console.log(movies);
+                    setMovies(movies);
+                } catch (err) {
+                    console.error('Error in fetching movies', err);
+                }
+            }
+        }
+    }, [session]);
+
     return (
         <div>
             <div className="fixed top-0 left-0 z-50 w-full">
@@ -33,30 +58,38 @@ export default function Homepage() {
             </div>
 
             <main className="pt-20">
-                <section className="py-20 text-center">
-                    <h1 className="text-4xl font-bold md:text-5xl">
-                        Experience <span className="text-primary">Cinema</span> Like Never Before
-                    </h1>
-                    <p className="mx-auto mt-4 max-w-2xl text-sm text-gray-400">
-                        Discover, review, and celebrate cinema from blockbusters to indie gems.
-                    </p>
+                <section className="relative flex h-[50vh] items-center justify-center text-center">
+                    <div className="bg-liner-to-b absolute inset-0 from-black/10 via-black/5 to-transparent"></div>
 
-                    <div className="mt-8 flex justify-center gap-4">
-                        <Link href="/movies">
-                            <button className="bg-primary hover:bg-primary-hover flex cursor-pointer items-center gap-2 rounded-md px-6 py-2">
-                                <Play size={16} /> Movies
-                            </button>
-                        </Link>
+                    {/* Hero Image */}
+                    <img src="/hero.png" alt="Hero" className="relative max-h-[80%] w-auto opacity-60" />
 
-                        <Link href="/tv-shows">
-                            <button className="bg-primary hover:bg-primary-hover flex cursor-pointer items-center gap-2 rounded-md px-6 py-2">
-                                <Play size={16} /> TV Shows
-                            </button>
-                        </Link>
+                    {/* Text */}
+                    <div className="absolute z-20 px-6">
+                        <h1 className="text-3xl font-bold text-white md:text-4xl">
+                            Experience <span className="text-primary">Cinema</span> Like Never Before
+                        </h1>
+                        <p className="mx-auto mt-3 max-w-2xl text-sm text-gray-200">
+                            Discover, review, and celebrate cinema from blockbusters to indie gems.
+                        </p>
+
+                        <div className="mt-6 flex justify-center gap-4">
+                            <Link href="/movies">
+                                <button className="bg-primary hover:bg-primary-hover flex items-center gap-2 rounded-md px-5 py-2 text-sm md:text-base">
+                                    <Play size={16} /> Movies
+                                </button>
+                            </Link>
+
+                            <Link href="/tv-shows">
+                                <button className="bg-primary hover:bg-primary-hover flex items-center gap-2 rounded-md px-5 py-2 text-sm md:text-base">
+                                    <Play size={16} /> TV Shows
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 </section>
 
-                <section className="py-5">
+                <section>
                     <h2 className="mb-2 text-center text-2xl font-semibold">Recommended for you</h2>
 
                     <div
