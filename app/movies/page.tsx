@@ -1,39 +1,84 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Star } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import MovieCard from '../components/MovieCard';
-import { moviesData } from '../data/movie';
-import type { Movie } from '../types';
+import { useAuth } from '@/context/AuthContext';
+import type { MovieData } from '../types';
 
-const genres = ['All Movies', 'Drama', 'Romance', 'Sci-Fi', 'Horror', 'Comedy', 'Action'];
+import { categories } from '../data/movie';
+const genres = categories;
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function Moviepage() {
-    const [activeGenre, setActiveGenre] = useState('All Movies');
-    const [showAll, setShowAll] = useState(false);
+    const [movies, setMovies] = useState<MovieData[] | null>(null);
+    const [filteredMovies, setFilteredMovies] = useState<MovieData[] | null>(null);
+    const [page, setPage] = useState<number>(1);
+    const [loadingMovies, setLoadingMovies] = useState(true);
+    const [activeGenres, setActiveGenres] = useState<string[]>([]);
+    const [sort, setSort] = useState<string>('popular');
 
+    const { session } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
 
+    // Fetch movies
     useEffect(() => {
-        const category = searchParams.get('category');
-
-        if (category && genres.includes(category)) {
-            setActiveGenre(category);
-        } else {
-            setActiveGenre('All Movies');
+        async function getMovies() {
+            try {
+                setLoadingMovies(true);
+                const res = await fetch(`${BASE_URL}/api/movies?sort=${sort}&page=${page}`);
+                const { moviesData } = await res.json();
+                setMovies(moviesData);
+            } catch (err) {
+                console.error('Error fetching movies', err);
+            }
         }
-    }, [searchParams]);
+        getMovies();
+    }, [session, sort, page]);
 
-    const filteredMovies: Movie[] =
-        activeGenre === 'All Movies'
-            ? moviesData.recommended
-            : moviesData.recommended.filter((movie) => movie.genre === activeGenre);
+    // Filter movies based on selected genres
+    useEffect(() => {
+        if (activeGenres.length === 0) {
+            setFilteredMovies(movies);
+        } else {
+            setFilteredMovies(
+                movies?.filter((movie) => movie.genres?.some((genre) => activeGenres.includes(genre))) || [],
+            );
+        }
+        setLoadingMovies(false);
+    }, [activeGenres, movies]);
 
-    const displayedMovies = showAll ? filteredMovies : filteredMovies.slice(0, 12);
+    // Initialize genres from query params
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get('category'); // can be comma-separated
+        if (category) {
+            const selected = category.split(',').filter((c) => genres.includes(c));
+            setActiveGenres(selected);
+        }
+    }, []);
+
+    const handleGenreClick = (genre: string) => {
+        let updatedGenres: string[];
+        if (activeGenres.includes(genre)) {
+            // Remove genre
+            updatedGenres = activeGenres.filter((g) => g !== genre);
+        } else {
+            // Add genre
+            updatedGenres = [...activeGenres, genre];
+        }
+        setActiveGenres(updatedGenres);
+
+        // Update URL
+        if (updatedGenres.length === 0) {
+            router.replace(pathname);
+        } else {
+            router.replace(`${pathname}?category=${encodeURIComponent(updatedGenres.join(','))}`);
+        }
+    };
 
     return (
         <div>
@@ -57,19 +102,11 @@ export default function Moviepage() {
                     {genres.map((genre) => (
                         <button
                             key={genre}
-                            onClick={() => {
-                                setShowAll(false);
-
-                                if (genre === 'All Movies') {
-                                    router.replace(pathname);
-                                } else {
-                                    router.replace(`${pathname}?category=${encodeURIComponent(genre)}`);
-                                }
-                            }}
+                            onClick={() => handleGenreClick(genre)}
                             className={`cursor-pointer rounded-xl border-2 px-5 py-2 text-sm transition ${
-                                activeGenre === genre
+                                activeGenres.includes(genre)
                                     ? 'border-primary bg-primary text-white'
-                                    : 'border-gray-600 text-gray-300 hover:border-white'
+                                    : 'hover:border-primary border-gray-600 text-gray-300'
                             }`}
                         >
                             {genre}
@@ -77,22 +114,21 @@ export default function Moviepage() {
                     ))}
                 </div>
 
-                <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {displayedMovies.map((movie) => (
-                        <div key={movie.id}>
-                            <MovieCard movie={movie} />
-                        </div>
-                    ))}
-                </div>
+                {!loadingMovies && (
+                    <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        {filteredMovies?.map((movie) => (
+                            <div key={movie.id}>
+                                <MovieCard movie={movie} />
+                            </div>
+                        ))}
+                    </div>
+                )}
 
-                {filteredMovies.length > 12 && (
-                    <div className="mt-14 flex justify-center">
-                        <button
-                            onClick={() => setShowAll(!showAll)}
-                            className="rounded-full border border-gray-500 px-6 py-2 transition hover:bg-white hover:text-black"
-                        >
-                            {showAll ? 'Show Less' : 'View All'}
-                        </button>
+                {loadingMovies && (
+                    <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        {Array.from({ length: 10 }).map((_, i) => (
+                            <div key={i} className="h-75 w-55 animate-pulse rounded-2xl bg-zinc-800" />
+                        ))}
                     </div>
                 )}
             </main>

@@ -15,6 +15,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 export default function Homepage() {
     const [showAll, setShowAll] = useState(false);
     const [movies, setMovies] = useState<MovieData[] | null>(null);
+    const [page, setPage] = useState<number>(1);
     const [loadingMovies, setLoadingMovies] = useState(true);
 
     const { session } = useAuth();
@@ -35,10 +36,11 @@ export default function Homepage() {
             try {
                 setLoadingMovies(true);
                 if (session || !session) {
-                    const res = await fetch(`${BASE_URL}/api/movies?sort=popular&page=1`);
-                    const { movieData } = await res.json();
-                    setMovies(movieData);
+                    const res = await fetch(`${BASE_URL}/api/movies?sort=popular&page=${page}`);
+                    const { moviesData } = await res.json();
+                    setMovies(moviesData);
                 }
+                // if (session) fetch recommendation data for the user
             } catch (err) {
                 console.error('Error fetching movies', err);
             } finally {
@@ -46,7 +48,7 @@ export default function Homepage() {
             }
         }
         getMovies();
-    }, [session]);
+    }, [session, page]);
 
     return (
         <div>
@@ -67,12 +69,12 @@ export default function Homepage() {
                         </p>
                         <div className="mt-6 flex justify-center gap-4">
                             <Link href="/movies">
-                                <button className="bg-primary hover:bg-primary-hover flex items-center gap-2 rounded-md px-5 py-2 text-sm md:text-base">
+                                <button className="bg-primary hover:bg-primary-hover flex cursor-pointer items-center gap-2 rounded-md px-5 py-2 text-sm md:text-base">
                                     <Play size={16} /> Movies
                                 </button>
                             </Link>
                             <Link href="/tv-shows">
-                                <button className="bg-primary hover:bg-primary-hover flex items-center gap-2 rounded-md px-5 py-2 text-sm md:text-base">
+                                <button className="bg-primary hover:bg-primary-hover flex cursor-pointer items-center gap-2 rounded-md px-5 py-2 text-sm md:text-base">
                                     <Play size={16} /> TV Shows
                                 </button>
                             </Link>
