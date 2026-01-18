@@ -12,11 +12,11 @@ export default function TVShowCard({ TVShow }: { TVShow: TVShowData }) {
     return (
         <div className="flex cursor-pointer flex-col overflow-hidden rounded-2xl bg-zinc-900 transition-transform duration-200 hover:scale-105">
             <Link href={`/tv-show/${TVShow.id}`} className="flex h-full flex-col">
-                <div className="h-[330px] w-full shrink-0">
+                <div className="h-82.5 w-full shrink-0">
                     <img src={poster} alt={TVShow.name ?? 'TVShow Poster'} className="h-full w-full object-cover" />
                 </div>
 
-                <div className="flex h-[120px] flex-col justify-between p-3">
+                <div className="flex h-30 flex-col justify-between p-3">
                     <div className="flex h-[60%] flex-col">
                         <h3 className="overflow-hidden font-semibold text-ellipsis whitespace-nowrap">
                             {TVShow.name ?? 'Untitled'}

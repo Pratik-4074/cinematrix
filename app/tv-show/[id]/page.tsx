@@ -107,7 +107,7 @@ export default async function TVShowDetailsPage({ params }: { params: { id: stri
                             <h2 className="mb-6 text-2xl font-semibold">Cast</h2>
                             <div className="scrollbar-hide flex gap-6 overflow-x-auto pb-4">
                                 {cast.map((actor) => (
-                                    <div key={actor.castOrder} className="min-w-[140px] text-center">
+                                    <div key={actor.castOrder} className="min-w-35 text-center">
                                         <img
                                             src={
                                                 actor.profilePath
